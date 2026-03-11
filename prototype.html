@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Premjer Složaja Drveta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:        #0d1a0f;
+    --bg2:       #121f14;
+    --bg3:       #1a2e1d;
+    --card:      #1e3322;
+    --card2:     #243b28;
+    --border:    #2d4d32;
+    --border2:   #3a6140;
+    --green:     #4ade80;
+    --green2:    #22c55e;
+    --green3:    #16a34a;
+    --green-dim: #166534;
+    --yellow:    #fbbf24;
+    --yellow2:   #f59e0b;
+    --red:       #f87171;
+    --text:      #e8f5e9;
+    --text2:     #a7c4aa;
+    --text3:     #6b8f6e;
+    --mono:      'JetBrains Mono', monospace;
+    --sans:      'Space Grotesk', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  /* ── Mobile shell ── */
+  .shell {
+    max-width: 420px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: var(--bg);
+  }
+
+  /* ── Header ── */
+  .header {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    height: 56px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .header-logo {
+    width: 32px; height: 32px;
+    background: var(--green3);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .header-logo svg { width: 18px; height: 18px; }
+  .header-title { font-size: 15px; font-weight: 700; color: var(--text); flex: 1; }
+  .header-sub { font-size: 10px; color: var(--text3); font-family: var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+  .header-actions { display: flex; gap: 4px; }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border: none; background: transparent; cursor: pointer;
+    color: var(--text2); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s, color .15s;
+  }
+  .icon-btn:hover { background: var(--card); color: var(--green); }
+  .icon-btn svg { width: 18px; height: 18px; }
+
+  /* ── Offline badge ── */
+  .offline-badge {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 10px; font-family: var(--mono); color: var(--yellow);
+    background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.25);
+    padding: 3px 8px; border-radius: 20px;
+  }
+
+  /* ── Pages ── */
+  .page { display: none; flex-direction: column; flex: 1; }
+  .page.active { display: flex; }
+
+  /* ── Scroll container ── */
+  .scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; padding-bottom: 90px; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    animation: fadeUp .3s ease both;
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+  }
+  .card-header svg { width: 16px; height: 16px; color: var(--green); flex-shrink: 0; }
+  .card-label {
+    font-size: 10px; font-family: var(--mono); text-transform: uppercase;
+    letter-spacing: .1em; color: var(--text3);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Hero stat bar ── */
+  .hero {
+    background: linear-gradient(135deg, var(--green3) 0%, #15803d 50%, #14532d 100%);
+    border-radius: 20px; padding: 20px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute;
+    right: -20px; top: -20px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+  }
+  .hero-title { font-size: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.7); margin-bottom: 4px; }
+  .hero-name { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .hero-stat {
+    background: rgba(0,0,0,.2); border-radius: 10px; padding: 10px;
+    text-align: center;
+  }
+  .hero-stat-val { font-family: var(--mono); font-size: 20px; font-weight: 700; color: #fff; }
+  .hero-stat-lbl { font-size: 10px; color: rgba(255,255,255,.6); margin-top: 2px; }
+
+  /* ── Action buttons ── */
+  .action-list { display: flex; flex-direction: column; gap: 8px; }
+  .action-btn {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px;
+    cursor: pointer; transition: all .15s; text-align: left; width: 100%;
+    color: var(--text); font-family: var(--sans);
+  }
+  .action-btn:hover { background: var(--card2); border-color: var(--border2); transform: translateX(2px); }
+  .action-btn:active { transform: scale(.98); }
+  .action-icon {
+    width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .action-icon svg { width: 22px; height: 22px; }
+  .action-icon.green { background: rgba(74,222,128,.12); color: var(--green); }
+  .action-icon.yellow { background: rgba(251,191,36,.12); color: var(--yellow); }
+  .action-icon.blue { background: rgba(96,165,250,.12); color: #60a5fa; }
+  .action-text { flex: 1; }
+  .action-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+  .action-desc { font-size: 12px; color: var(--text3); }
+  .action-arrow { color: var(--text3); }
+  .action-arrow svg { width: 16px; height: 16px; }
+
+  /* ── Tips card ── */
+  .tips-list { display: flex; flex-direction: column; gap: 8px; }
+  .tip-item { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--text2); }
+  .tip-num {
+    width: 20px; height: 20px; flex-shrink: 0;
+    background: var(--green-dim); color: var(--green);
+    border-radius: 6px; font-size: 11px; font-weight: 700; font-family: var(--mono);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── Warning ── */
+  .warning {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2);
+    border-radius: 12px; padding: 12px; font-size: 12px; color: rgba(251,191,36,.9);
+  }
+  .warning svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── Formula ── */
+  .formula-box {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+    font-family: var(--mono); font-size: 13px; color: var(--green);
+    letter-spacing: .03em;
+  }
+
+  /* ── Sticky bottom button ── */
+  .sticky-bottom {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 420px;
+    padding: 12px 16px 20px;
+    background: linear-gradient(to top, var(--bg) 60%, transparent);
+    pointer-events: none; z-index: 40;
+  }
+  .sticky-bottom .main-btn {
+    pointer-events: all;
+    width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--green2); color: #052e16; font-family: var(--sans);
+    font-size: 16px; font-weight: 700; padding: 16px;
+    border-radius: 16px; border: none; cursor: pointer;
+    box-shadow: 0 8px 32px rgba(34,197,94,.3);
+    transition: all .15s;
+  }
+  .sticky-bottom .main-btn:hover { background: var(--green); transform: translateY(-1px); box-shadow: 0 12px 40px rgba(34,197,94,.4); }
+  .sticky-bottom .main-btn:active { transform: scale(.98); }
+  .sticky-bottom .main-btn svg { width: 20px; height: 20px; }
+
+  /* ── Step indicator ── */
+  .steps {
+    display: flex; align-items: center; gap: 6px;
+    padding: 14px 16px 0;
+  }
+  .step {
+    flex: 1; height: 3px; border-radius: 2px;
+    background: var(--border); transition: background .3s;
+  }
+  .step.done { background: var(--green3); }
+  .step.active { background: var(--green); }
+
+  /* ── Mode selector ── */
+  .mode-selector {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .mode-btn {
+    background: var(--card); border: 2px solid var(--border);
+    border-radius: 14px; padding: 14px 12px;
+    cursor: pointer; transition: all .2s; text-align: center;
+    font-family: var(--sans); color: var(--text2);
+  }
+  .mode-btn:hover { border-color: var(--border2); }
+  .mode-btn.selected { border-color: var(--green); background: rgba(74,222,128,.08); color: var(--green); }
+  .mode-btn svg { width: 28px; height: 28px; margin: 0 auto 8px; display: block; }
+  .mode-btn .mode-title { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+  .mode-btn .mode-desc { font-size: 11px; color: var(--text3); line-height: 1.4; }
+  .mode-btn.selected .mode-desc { color: rgba(74,222,128,.7); }
+
+  /* ── Camera view ── */
+  .camera-view {
+    background: #000; border-radius: 16px; overflow: hidden;
+    aspect-ratio: 4/3; position: relative;
+    border: 1px solid var(--border);
+  }
+  .camera-mock {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #0a1a0c 0%, #1a3320 50%, #0d2010 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  /* Simulated log stack in camera */
+  .log-stack-demo {
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 28px,
+        rgba(101,67,33,.6) 28px,
+        rgba(101,67,33,.6) 30px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 48px,
+        rgba(80,50,20,.4) 48px,
+        rgba(80,50,20,.4) 50px
+      );
+    background-color: #3d2b1a;
+    opacity: .7;
+  }
+  .camera-overlay-rect {
+    position: absolute;
+    inset: 12% 8%;
+    border: 2px solid var(--green);
+    border-radius: 4px;
+  }
+  .camera-overlay-rect::before,
+  .camera-overlay-rect::after {
+    content: '';
+    position: absolute;
+    background: var(--green);
+  }
+  .camera-overlay-rect::before { top: 50%; left: 0; right: 0; height: 1px; opacity: .3; }
+  .camera-overlay-rect::after  { left: 50%; top: 0; bottom: 0; width: 1px; opacity: .3; }
+  /* Section markers */
+  .section-line {
+    position: absolute;
+    top: 12%; bottom: 12%;
+    width: 1px; background: var(--yellow);
+    opacity: .8;
+  }
+  .section-num {
+    position: absolute;
+    top: calc(12% - 20px);
+    transform: translateX(-50%);
+    font-family: var(--mono); font-size: 10px; font-weight: 700;
+    background: var(--yellow); color: #000;
+    padding: 1px 5px; border-radius: 4px;
+  }
+  .camera-rec {
+    position: absolute; top: 10px; right: 12px;
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(0,0,0,.6); border-radius: 20px; padding: 4px 10px;
+    font-family: var(--mono); font-size: 11px; color: #fff;
+  }
+  .rec-dot { width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: blink 1s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .2; } }
+  .camera-timer {
+    position: absolute; top: 10px; left: 12px;
+    font-family: var(--mono); font-size: 13px; font-weight: 700; color: #fff;
+    background: rgba(0,0,0,.5); padding: 3px 8px; border-radius: 6px;
+  }
+  .camera-hint {
+    position: absolute; bottom: 10px; left: 0; right: 0;
+    text-align: center; font-size: 11px; color: rgba(255,255,255,.7);
+    font-family: var(--mono);
+  }
+
+  /* ── Section table ── */
+  .section-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px;
+  }
+  .section-table th {
+    font-family: var(--mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--text3); font-weight: 500;
+    padding: 6px 10px; text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-table td {
+    padding: 10px 10px; border-bottom: 1px solid rgba(45,77,50,.4);
+    vertical-align: middle;
+  }
+  .section-table tr:last-child td { border-bottom: none; }
+  .section-table tr:hover td { background: var(--card2); }
+  .section-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 6px;
+    background: var(--yellow); color: #000;
+    font-family: var(--mono); font-size: 11px; font-weight: 700;
+  }
+  .mono-val { font-family: var(--mono); font-size: 13px; color: var(--green); }
+  .total-row td { font-weight: 700; color: var(--text); border-top: 1px solid var(--border); padding-top: 12px; }
+  .total-row .mono-val { color: var(--green); font-size: 15px; }
+
+  /* ── Photo with overlay ── */
+  .photo-container {
+    background: #000; border-radius: 16px; overflow: hidden;
+    position: relative; border: 1px solid var(--border);
+  }
+  .photo-mock {
+    width: 100%; aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #0a1a0c 0%, #1a3320 50%, #0d2010 100%);
+    position: relative; overflow: hidden;
+  }
+  .photo-log-bg {
+    position: absolute; inset: 0;
+    background: #3d2b1a;
+    opacity: .8;
+  }
+
+  /* Section detection overlay on photo */
+  .detect-overlay {
+    position: absolute; inset: 0;
+  }
+  .detect-section {
+    position: absolute;
+    top: 10%; bottom: 10%;
+    border: 2px dashed rgba(251,191,36,.6);
+    background: rgba(251,191,36,.05);
+  }
+  .detect-label {
+    position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+    font-family: var(--mono); font-size: 9px; font-weight: 700;
+    background: var(--yellow); color: #000; padding: 1px 6px; border-radius: 4px;
+    white-space: nowrap;
+  }
+  .detect-dim {
+    position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+    font-family: var(--mono); font-size: 9px;
+    color: var(--yellow); white-space: nowrap;
+  }
+
+  /* ── Form inputs ── */
+  .form-section { display: flex; flex-direction: column; gap: 14px; }
+  .field-label {
+    font-size: 11px; font-family: var(--mono); text-transform: uppercase;
+    letter-spacing: .08em; color: var(--text3); margin-bottom: 6px; display: block;
+  }
+  .field-label span { color: var(--red); }
+  .field-input {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--sans); font-size: 14px;
+    transition: border-color .15s, box-shadow .15s; outline: none;
+    -webkit-appearance: none;
+  }
+  .field-input:focus { border-color: var(--green2); box-shadow: 0 0 0 3px rgba(34,197,94,.1); }
+  .field-input::placeholder { color: var(--text3); }
+  .field-hint { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .section-label { font-size: 11px; font-family: var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--text3); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── Volume preview ── */
+  .volume-preview {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.2);
+    border-radius: 12px; padding: 14px 16px;
+  }
+  .volume-label { font-size: 12px; color: var(--text2); }
+  .volume-value { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--green); }
+  .volume-unit { font-size: 13px; color: var(--text3); margin-left: 4px; }
+
+  /* ── History list ── */
+  .hist-item {
+    display: flex; gap: 12px; padding: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; cursor: pointer;
+    transition: all .15s; animation: fadeUp .3s ease both;
+  }
+  .hist-item:hover { background: var(--card2); border-color: var(--border2); }
+  .hist-thumb {
+    width: 52px; height: 52px; border-radius: 10px;
+    background: var(--bg3); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .hist-thumb-bg { position: absolute; inset: 0; background: #3d2b1a; opacity: .7; }
+  .hist-thumb svg { width: 20px; height: 20px; color: var(--text3); position: relative; z-index: 1; }
+  .hist-info { flex: 1; min-width: 0; }
+  .hist-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; margin-bottom: 3px; }
+  .hist-name { font-size: 14px; font-weight: 600; }
+  .hist-status {
+    font-size: 10px; font-family: var(--mono); padding: 2px 7px;
+    border-radius: 20px; border: 1px solid; flex-shrink: 0;
+  }
+  .status-p { color: var(--yellow); border-color: rgba(251,191,36,.3); background: rgba(251,191,36,.08); }
+  .status-v { color: var(--green); border-color: rgba(74,222,128,.3); background: rgba(74,222,128,.08); }
+  .status-s { color: var(--red); border-color: rgba(248,113,113,.3); background: rgba(248,113,113,.08); }
+  .hist-loc { font-size: 12px; color: var(--text3); display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+  .hist-loc svg { width: 11px; height: 11px; }
+  .hist-bottom { display: flex; align-items: center; justify-content: space-between; }
+  .hist-date { font-size: 11px; color: var(--text3); }
+  .hist-vol { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--green); }
+
+  /* ── Detail page ── */
+  .detail-photo {
+    border-radius: 16px; overflow: hidden;
+    aspect-ratio: 4/3; position: relative;
+  }
+  .detail-photo-bg { position: absolute; inset: 0; background: #2d1f10; }
+  .detail-photo-overlay {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,.3) 28px, rgba(0,0,0,.3) 30px);
+  }
+  .data-table { display: flex; flex-direction: column; }
+  .data-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 0; gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .data-row:last-child { border-bottom: none; }
+  .data-key { font-size: 12px; color: var(--text3); flex-shrink: 0; }
+  .data-val { font-size: 13px; font-weight: 500; text-align: right; }
+  .data-val.highlight { font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--green); }
+
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 420px; z-index: 50;
+    background: var(--bg2); border-top: 1px solid var(--border);
+    display: grid; grid-template-columns: repeat(4, 1fr); padding: 8px 0 12px;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    cursor: pointer; padding: 4px; transition: color .15s;
+    color: var(--text3); border: none; background: transparent; font-family: var(--sans);
+  }
+  .nav-item:hover { color: var(--text2); }
+  .nav-item.active { color: var(--green); }
+  .nav-item svg { width: 20px; height: 20px; }
+  .nav-item span { font-size: 10px; font-family: var(--mono); }
+
+  /* ── Search bar ── */
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 10px 14px;
+    transition: border-color .15s;
+  }
+  .search-bar:focus-within { border-color: var(--green2); }
+  .search-bar svg { width: 15px; height: 15px; color: var(--text3); flex-shrink: 0; }
+  .search-input {
+    flex: 1; background: none; border: none; outline: none;
+    font-family: var(--sans); font-size: 14px; color: var(--text);
+  }
+  .search-input::placeholder { color: var(--text3); }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 6px; }
+  .tab {
+    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all .15s; border: 1px solid transparent;
+    font-family: var(--mono);
+  }
+  .tab.active { background: var(--green3); color: var(--green); border-color: var(--green3); }
+  .tab:not(.active) { color: var(--text3); border-color: var(--border); }
+
+  /* ── Progress/section bar ── */
+  .seg-bar { display: flex; gap: 3px; height: 6px; border-radius: 3px; overflow: hidden; }
+  .seg-part { flex: 1; border-radius: 2px; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 18px; border-radius: 12px; font-family: var(--sans);
+    font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all .15s;
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .btn-primary { background: var(--green2); color: #052e16; }
+  .btn-primary:hover { background: var(--green); }
+  .btn-secondary { background: var(--card); border: 1px solid var(--border); color: var(--text2); }
+  .btn-secondary:hover { border-color: var(--border2); color: var(--text); }
+  .btn-danger { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.25); color: var(--red); }
+  .btn-danger:hover { background: rgba(248,113,113,.15); }
+  .btn-yellow { background: rgba(251,191,36,.15); border: 1px solid rgba(251,191,36,.3); color: var(--yellow); }
+  .btn-row { display: flex; gap: 8px; }
+  .btn-row .btn { flex: 1; }
+
+  /* ── Capture btn (camera) ── */
+  .capture-wrap { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 8px 0; }
+  .capture-btn {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: #fff; border: 4px solid var(--bg2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 3px var(--green), 0 6px 24px rgba(0,0,0,.4);
+    transition: all .15s; flex-shrink: 0;
+  }
+  .capture-btn:hover { transform: scale(1.05); box-shadow: 0 0 0 4px var(--green), 0 8px 32px rgba(0,0,0,.4); }
+  .capture-btn:active { transform: scale(.95); }
+  .capture-btn svg { width: 28px; height: 28px; color: #000; }
+  .rec-btn {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: #ef4444; border: 4px solid var(--bg2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 3px rgba(239,68,68,.5), 0 6px 24px rgba(239,68,68,.3);
+    transition: all .15s; flex-shrink: 0;
+  }
+  .rec-btn svg { width: 24px; height: 24px; color: #fff; }
+
+  /* ── Mode badge ── */
+  .mode-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono); font-size: 10px;
+    padding: 3px 8px; border-radius: 20px;
+  }
+  .mode-tag.video { background: rgba(239,68,68,.12); color: #f87171; border: 1px solid rgba(239,68,68,.2); }
+  .mode-tag.photo { background: rgba(96,165,250,.12); color: #60a5fa; border: 1px solid rgba(96,165,250,.2); }
+  .mode-tag svg { width: 10px; height: 10px; }
+
+  /* ─ Animation delays ─ */
+  .card:nth-child(1) { animation-delay: .05s; }
+  .card:nth-child(2) { animation-delay: .1s; }
+  .card:nth-child(3) { animation-delay: .15s; }
+  .card:nth-child(4) { animation-delay: .2s; }
+  .hist-item:nth-child(1) { animation-delay: .05s; }
+  .hist-item:nth-child(2) { animation-delay: .1s; }
+  .hist-item:nth-child(3) { animation-delay: .15s; }
+
+  /* ── Back btn ── */
+  .back-btn {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--card); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: all .15s;
+  }
+  .back-btn:hover { background: var(--card2); }
+  .back-btn svg { width: 16px; height: 16px; color: var(--text2); }
+
+  /* ── Select ── */
+  .field-select {
+    width: 100%; padding: 12px 14px; border-radius: 10px;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--sans); font-size: 14px;
+    outline: none; -webkit-appearance: none;
+    cursor: pointer;
+  }
+  .field-select:focus { border-color: var(--green2); box-shadow: 0 0 0 3px rgba(34,197,94,.1); }
+
+  /* ── GPS row ── */
+  .gps-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; border-radius: 10px;
+    background: var(--bg); border: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .gps-row svg { width: 14px; height: 14px; color: var(--green); flex-shrink: 0; }
+  .gps-val { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+  .gps-acc { font-size: 10px; color: var(--text3); margin-left: auto; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ════════════ HEADER ════════════ -->
+  <header class="header" id="header">
+    <div class="back-btn" id="backBtn" style="display:none" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="header-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L4 10h4v2H6l6 6 6-6h-2v-2h4L12 2z" fill="currentColor" stroke="none"/>
+        <rect x="10" y="18" width="4" height="4" rx="1" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div style="flex:1">
+      <div class="header-title" id="headerTitle">Premjer Složaja</div>
+      <div class="header-sub" id="headerSub">v2.0 · offline</div>
+    </div>
+    <div class="header-actions">
+      <div class="offline-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px"><path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+        Offline
+      </div>
+      <button class="icon-btn" onclick="toggleTheme()" title="Tema">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ════════════ PAGE: HOME ════════════ -->
+  <div class="page active" id="pageHome">
+    <div class="scroll">
+
+      <!-- Hero -->
+      <div class="hero" style="animation:fadeUp .4s ease both">
+        <div class="hero-title">🌲 Šumarski terenski alat</div>
+        <div class="hero-name">Premjer Složaja Drveta</div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-val">12</div>
+            <div class="hero-stat-lbl">Mjerenja</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-val">87,4</div>
+            <div class="hero-stat-lbl">Ukupno m³</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-val">7,3</div>
+            <div class="hero-stat-lbl">Prosjek m³</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="action-list">
+        <button class="action-btn" onclick="showPage('pageNewMode')">
+          <div class="action-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          </div>
+          <div class="action-text">
+            <div class="action-title">Novo mjerenje</div>
+            <div class="action-desc">Snimi složaj video ili foto metodom</div>
+          </div>
+          <div class="action-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </button>
+
+        <button class="action-btn" onclick="showPage('pageHistory')">
+          <div class="action-icon yellow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          </div>
+          <div class="action-text">
+            <div class="action-title">Historija mjerenja</div>
+            <div class="action-desc">12 mjerenja · pretraži i filtriraj</div>
+          </div>
+          <div class="action-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </button>
+
+        <button class="action-btn" onclick="alert('CSV preuzet!\n12 mjerenja · 87,4 m³ ukupno')">
+          <div class="action-icon blue">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <div class="action-text">
+            <div class="action-title">Izvoz CSV</div>
+            <div class="action-desc">Preuzmi sva mjerenja za Excel</div>
+          </div>
+          <div class="action-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </button>
+      </div>
+
+      <!-- Tips -->
+      <div class="card">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span class="card-label">Kako pravilno snimiti složaj</span>
+        </div>
+        <div class="tips-list">
+          <div class="tip-item"><div class="tip-num">1</div>Stani frontalno ispred složaja</div>
+          <div class="tip-item"><div class="tip-num">2</div>Drži kameru što ravnije (horizontalno)</div>
+          <div class="tip-item"><div class="tip-num">3</div>Obuhvati cijeli složaj u kadar</div>
+          <div class="tip-item"><div class="tip-num">4</div>Za VIDEO: sporo podigni kameru od dna do vrha, pa po cijeloj dužini</div>
+          <div class="tip-item"><div class="tip-num">5</div>Koristi referentni marker (letvu 1 m) za kalibraciju</div>
+        </div>
+      </div>
+
+      <!-- Formula -->
+      <div class="card">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+          <span class="card-label">Formula izračuna</span>
+        </div>
+        <div class="formula-box">V = D × Š × H × k</div>
+        <p style="font-size:12px;color:var(--text3);margin-top:8px">
+          Za video: zbraja zapreminu svakog poprečnog presjeka uzduž dužine složaja.
+        </p>
+      </div>
+
+      <!-- Warning -->
+      <div class="warning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span><strong>Procjena:</strong> Rezultati su operativna procjena, ne službeni geodetski premjer. Za zvanične potrebe obavezno potvrditi klasičnim mjerenjem.</span>
+      </div>
+
+    </div>
+
+    <!-- Sticky CTA -->
+    <div class="sticky-bottom">
+      <button class="main-btn" onclick="showPage('pageNewMode')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Novo mjerenje
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════ PAGE: CHOOSE MODE ════════════ -->
+  <div class="page" id="pageNewMode">
+    <div class="steps">
+      <div class="step active"></div>
+      <div class="step"></div>
+      <div class="step"></div>
+    </div>
+    <div class="scroll">
+      <div style="font-size:11px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Korak 1 / 3</div>
+      <div style="font-size:20px;font-weight:700;margin-bottom:4px">Odaberi metodu snimanja</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:16px">Video daje preciznije rezultate — otkriva svaki poprečni presjek duž složaja.</div>
+
+      <div class="mode-selector">
+        <div class="mode-btn selected" onclick="selectMode(this,'video')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          <div class="mode-title">VIDEO</div>
+          <div class="mode-desc">Snimi cijeli složaj · auto-detekcija presjeka · najpreciznije</div>
+        </div>
+        <div class="mode-btn" onclick="selectMode(this,'photo')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <div class="mode-title">FOTOGRAFIJA</div>
+          <div class="mode-desc">Jedan kadar · ručno postavljanje presjeka · brzo</div>
+        </div>
+      </div>
+
+      <!-- Video mode info -->
+      <div class="card" id="videoModeInfo">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--red)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          <span class="card-label">Kako radi VIDEO metoda</span>
+        </div>
+        <div class="tips-list">
+          <div class="tip-item"><div class="tip-num">1</div>Snimi kratki video (5–15 sec) duž čela složaja</div>
+          <div class="tip-item"><div class="tip-num">2</div>App automatski detektuje poprečne presjeke</div>
+          <div class="tip-item"><div class="tip-num">3</div>Svakom presjeku dodjeljuje se broj i dimenzije</div>
+          <div class="tip-item"><div class="tip-num">4</div>Možeš ručno korigovati svaki presjek</div>
+          <div class="tip-item"><div class="tip-num">5</div>Zapremina = zbir svih presjeka × prosječna dužina</div>
+        </div>
+      </div>
+
+      <!-- Photo mode info -->
+      <div class="card" id="photoModeInfo" style="display:none">
+        <div class="card-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#60a5fa"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span class="card-label">Kako radi FOTO metoda</span>
+        </div>
+        <div class="tips-list">
+          <div class="tip-item"><div class="tip-num">1</div>Fotografiši čelo složaja frontalno</div>
+          <div class="tip-item"><div class="tip-num">2</div>Povuci markere na svaki vidljivi presjek</div>
+          <div class="tip-item"><div class="tip-num">3</div>Opciono: postavi kalibracionu letvu u kadar</div>
+          <div class="tip-item"><div class="tip-num">4</div>Unesi dužinu složaja ručno</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" style="width:100%" onclick="showPage('pageCameraVideo')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        Nastavi
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════ PAGE: CAMERA (VIDEO) ════════════ -->
+  <div class="page" id="pageCameraVideo">
+    <div class="steps">
+      <div class="step done"></div>
+      <div class="step active"></div>
+      <div class="step"></div>
+    </div>
+    <div class="scroll">
+      <div style="font-size:11px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Korak 2 / 3 · VIDEO</div>
+
+      <!-- Camera view -->
+      <div class="camera-view">
+        <div class="camera-mock">
+          <div class="log-stack-demo"></div>
+          <!-- Bounding box -->
+          <div class="camera-overlay-rect"></div>
+          <!-- Section detection lines while recording -->
+          <div class="section-line" style="left:22%"></div>
+          <div class="section-num" style="left:22%">1</div>
+          <div class="section-line" style="left:38%"></div>
+          <div class="section-num" style="left:38%">2</div>
+          <div class="section-line" style="left:55%"></div>
+          <div class="section-num" style="left:55%">3</div>
+          <div class="section-line" style="left:72%"></div>
+          <div class="section-num" style="left:72%">4</div>
+          <!-- Recording indicator -->
+          <div class="camera-rec"><div class="rec-dot"></div> REC</div>
+          <div class="camera-timer">00:06</div>
+          <div class="camera-hint">Polagano snimai od lijeva prema desno →</div>
+        </div>
+      </div>
+
+      <!-- Section live count -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px">
+        <div>
+          <div style="font-size:11px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px">Detektovani presjeci</div>
+          <div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--yellow)">4 <span style="font-size:13px;color:var(--text3)">/ auto</span></div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Trajanje</div>
+          <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--text)">00:06</div>
+        </div>
+      </div>
+
+      <div class="warning" style="font-size:11px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Drži kameru stabilno i snimai duž <strong>cijele dužine</strong> složaja bez zaustavljanja.
+      </div>
+
+      <!-- Capture buttons -->
+      <div class="capture-wrap">
+        <button class="btn btn-secondary" style="flex:none;padding:10px 16px" onclick="showPage('pageNewMode')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="rec-btn" onclick="showPage('pageVideoSections')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </div>
+        <button class="btn btn-secondary" style="flex:none;padding:10px 16px" onclick="alert('Flip kamera')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+      </div>
+      <p style="text-align:center;font-size:11px;color:var(--text3)">Tapni crveno dugme za zaustavljanje snimanja</p>
+    </div>
+  </div>
+
+  <!-- ════════════ PAGE: VIDEO SECTIONS RESULT ════════════ -->
+  <div class="page" id="pageVideoSections">
+    <div class="steps">
+      <div class="step done"></div>
+      <div class="step done"></div>
+      <div class="step active"></div>
+    </div>
+    <div class="scroll">
+      <div style="font-size:11px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Korak 3 / 3 · Detektovani presjeci</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="font-size:18px;font-weight:700">Analiza video snimka</div>
+        <div class="mode-tag video">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          VIDEO
+        </div>
+      </div>
+
+      <!-- Video thumbnail with sections -->
+      <div class="photo-container">
+        <div class="photo-mock" style="aspect-ratio:4/3">
+          <div class="photo-log-bg"></div>
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(0,0,0,.3) 28px,rgba(0,0,0,.3) 30px)"></div>
+          <div class="detect-overlay">
+            <!-- Section 1 -->
+            <div class="detect-section" style="left:8%;width:16%">
+              <div class="detect-label">SEK 1</div>
+              <div class="detect-dim">1,18×1,05m</div>
+            </div>
+            <!-- Section 2 -->
+            <div class="detect-section" style="left:27%;width:16%">
+              <div class="detect-label">SEK 2</div>
+              <div class="detect-dim">1,22×1,08m</div>
+            </div>
+            <!-- Section 3 -->
+            <div class="detect-section" style="left:46%;width:16%">
+              <div class="detect-label">SEK 3</div>
+              <div class="detect-dim">1,15×1,02m</div>
+            </div>
+            <!-- Section 4 -->
+            <div class="detect-section" style="left:65%;width:16%">
+              <div class="detect-label">SEK 4</div>
+              <div class="detect-dim">1,20×1,06m</div>
+            </div>
+          </div>
+          <!-- Green bounding -->
+          <div style="position:absolute;inset:8% 6%;border:2px solid var(--green);border-radius:4px;pointer-events:none">
+            <div style="position:absolute;bottom:-20px;right:0;font-family:var(--mono);font-size:10px;color:var(--green)">4 presjeka · 4,0 m</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section table -->
+      <div class="card" style="padding:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span class="card-label">Poprečni presjeci</span>
+          <span style="font-size:11px;color:var(--text3)">Tapni za korekciju</span>
+        </div>
+        <table class="section-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Širina</th>
+              <th>Visina</th>
+              <th>Presjek m²</th>
+              <th>Dio m³</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="alert('Korekcija presjeka 1\nŠirina: 1,18 m\nVisina: 1,05 m')">
+              <td><span class="section-badge">1</span></td>
+              <td class="mono-val">1,18</td>
+              <td class="mono-val">1,05</td>
+              <td class="mono-val">1,239</td>
+              <td class="mono-val">1,239</td>
+            </tr>
+            <tr onclick="alert('Korekcija presjeka 2')">
+              <td><span class="section-badge">2</span></td>
+              <td class="mono-val">1,22</td>
+              <td class="mono-val">1,08</td>
+              <td class="mono-val">1,318</td>
+              <td class="mono-val">1,318</td>
+            </tr>
+            <tr onclick="alert('Korekcija presjeka 3')">
+              <td><span class="section-badge">3</span></td>
+              <td class="mono-val">1,15</td>
+              <td class="mono-val">1,02</td>
+              <td class="mono-val">1,173</td>
+              <td class="mono-val">1,173</td>
+            </tr>
+            <tr onclick="alert('Korekcija presjeka 4')">
+              <td><span class="section-badge">4</span></td>
+              <td class="mono-val">1,20</td>
+              <td class="mono-val">1,06</td>
+              <td class="mono-val">1,272</td>
+              <td class="mono-val">1,272</td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="3" style="font-size:12px;color:var(--text3)">Prosjek × dužina × k</td>
+              <td><span class="mono-val" style="font-size:11px">Σ=5,002</span></td>
+              <td class="mono-val" style="font-size:16px;color:var(--green)">3,251</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Params -->
+      <div class="card">
+        <div class="section-label">Parametri složaja</div>
+        <div class="form-section">
+          <div>
+            <label class="field-label">Lokacija <span>*</span></label>
+            <input class="field-input" value="Odjel 15 — Komarnički predio" />
+          </div>
+          <div class="field-row">
+            <div>
+              <label class="field-label">Dužina (m) <span>*</span></label>
+              <input class="field-input" value="4,00" oninput="updateVol()" />
+            </div>
+            <div>
+              <label class="field-label">Koef. popun.</label>
+              <input class="field-input" value="0,65" oninput="updateVol()" />
+            </div>
+          </div>
+          <div>
+            <label class="field-label">Vrsta drveta</label>
+            <select class="field-select">
+              <option>Bukva</option><option>Jela</option><option>Smreka</option>
+              <option>Hrast</option><option>Grab</option><option>Jasen</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Status</label>
+            <select class="field-select">
+              <option>Procjena</option><option>Provjereno</option><option>Sporno</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- GPS -->
+      <div class="gps-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <span class="gps-val">44.537821, 16.218450</span>
+        <span class="gps-acc">±4 m</span>
+      </div>
+
+      <!-- Volume live -->
+      <div class="volume-preview">
+        <div>
+          <div class="volume-label">Procijenjena zapremina</div>
+          <div style="font-size:11px;color:var(--text3)">4 presjeka · dužina 4,0 m · k=0,65</div>
+        </div>
+        <div>
+          <span class="volume-value" id="volDisplay">3,251</span>
+          <span class="volume-unit">m³</span>
+        </div>
+      </div>
+
+      <div class="warning"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Provjeri i koriguj vrijednosti presjeka prije spremanja.
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="showPage('pageCameraVideo')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><polyline points="9 15 3 15 3 9"/><path d="M3 15a9 9 0 1 0 9-9"/></svg>
+          Ponovi
+        </button>
+        <button class="btn btn-primary" onclick="showPage('pageHistory');alert('✅ Mjerenje spremljeno!\n3,251 m³ · Bukva · Odjel 15')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Spremi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ PAGE: HISTORY ════════════ -->
+  <div class="page" id="pageHistory">
+    <div class="scroll">
+
+      <!-- Search + filter -->
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" placeholder="Pretraži lokaciju, vrstu drveta..."/>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">Sva (12)</div>
+        <div class="tab" onclick="this.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">Video (8)</div>
+        <div class="tab" onclick="this.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')">Foto (4)</div>
+      </div>
+
+      <!-- Summary bar -->
+      <div style="display:flex;gap:3px;margin:0">
+        <div class="seg-part" style="background:var(--green3);flex:8"></div>
+        <div class="seg-part" style="background:rgba(251,191,36,.4);flex:2"></div>
+        <div class="seg-part" style="background:rgba(248,113,113,.3);flex:2"></div>
+      </div>
+
+      <!-- Items -->
+      <div class="hist-item" onclick="showPage('pageDetail')">
+        <div class="hist-thumb">
+          <div class="hist-thumb-bg"></div>
+          <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          </div>
+        </div>
+        <div class="hist-info">
+          <div class="hist-top">
+            <span class="hist-name">Bukva · Odjel 15</span>
+            <span class="hist-status status-v">Provjereno</span>
+          </div>
+          <div class="hist-loc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Komarnički predio · VIDEO · 4 presjeka
+          </div>
+          <div class="hist-bottom">
+            <span class="hist-date">09.03.2026 · 10:14</span>
+            <span class="hist-vol">3,251 m³</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hist-item" onclick="showPage('pageDetail')">
+        <div class="hist-thumb">
+          <div class="hist-thumb-bg"></div>
+          <div style="position:relative;z-index:1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+        </div>
+        <div class="hist-info">
+          <div class="hist-top">
+            <span class="hist-name">Jela · Odjel 8</span>
+            <span class="hist-status status-p">Procjena</span>
+          </div>
+          <div class="hist-loc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Šator planina · FOTO · 1 presjek
+          </div>
+          <div class="hist-bottom">
+            <span class="hist-date">08.03.2026 · 14:32</span>
+            <span class="hist-vol">5,688 m³</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hist-item" onclick="showPage('pageDetail')">
+        <div class="hist-thumb">
+          <div class="hist-thumb-bg"></div>
+          <div style="position:relative;z-index:1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          </div>
+        </div>
+        <div class="hist-info">
+          <div class="hist-top">
+            <span class="hist-name">Smreka · Odjel 22</span>
+            <span class="hist-status status-s">Sporno</span>
+          </div>
+          <div class="hist-loc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Vlašić sjever · VIDEO · 6 presjeka
+          </div>
+          <div class="hist-bottom">
+            <span class="hist-date">07.03.2026 · 09:05</span>
+            <span class="hist-vol">4,122 m³</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:12px 0;font-size:12px;color:var(--text3)">
+        + 9 starijih mjerenja
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════ PAGE: DETAIL ════════════ -->
+  <div class="page" id="pageDetail">
+    <div class="scroll">
+
+      <!-- Photo/video -->
+      <div class="detail-photo">
+        <div class="detail-photo-bg"></div>
+        <div class="detail-photo-overlay"></div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:40px;height:40px;color:rgba(74,222,128,.5)"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            <span style="font-family:var(--mono);font-size:10px;color:rgba(74,222,128,.5)">VIDEO · 00:12</span>
+          </div>
+        </div>
+        <!-- Section markers on detail photo -->
+        <div style="position:absolute;bottom:10px;left:10px;display:flex;gap:4px">
+          <span class="section-badge">1</span>
+          <span class="section-badge">2</span>
+          <span class="section-badge">3</span>
+          <span class="section-badge">4</span>
+        </div>
+        <div class="mode-tag video" style="position:absolute;top:10px;left:10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          VIDEO
+        </div>
+      </div>
+
+      <!-- Status buttons -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-size:12px;color:var(--text2)">Status mjerenja</span>
+          <span class="hist-status status-v">Provjereno</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+          <button class="btn btn-yellow" style="font-size:12px;padding:8px">Procjena</button>
+          <button class="btn btn-primary" style="font-size:12px;padding:8px">Provjereno</button>
+          <button class="btn btn-danger" style="font-size:12px;padding:8px">Sporno</button>
+        </div>
+      </div>
+
+      <!-- Section table in detail -->
+      <div class="card" style="padding:12px">
+        <span class="card-label">Poprečni presjeci · 4 detektovana</span>
+        <table class="section-table" style="margin-top:10px">
+          <thead>
+            <tr>
+              <th>#</th><th>Š (m)</th><th>H (m)</th><th>m²</th><th>m³ dio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="section-badge">1</span></td><td class="mono-val">1,18</td><td class="mono-val">1,05</td><td class="mono-val">1,239</td><td class="mono-val">1,239</td></tr>
+            <tr><td><span class="section-badge">2</span></td><td class="mono-val">1,22</td><td class="mono-val">1,08</td><td class="mono-val">1,318</td><td class="mono-val">1,318</td></tr>
+            <tr><td><span class="section-badge">3</span></td><td class="mono-val">1,15</td><td class="mono-val">1,02</td><td class="mono-val">1,173</td><td class="mono-val">1,173</td></tr>
+            <tr><td><span class="section-badge">4</span></td><td class="mono-val">1,20</td><td class="mono-val">1,06</td><td class="mono-val">1,272</td><td class="mono-val">1,272</td></tr>
+            <tr class="total-row">
+              <td colspan="4" style="font-size:11px;color:var(--text3)">Zbir × dužina 4,0 m × k 0,65</td>
+              <td class="mono-val">3,251</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Data -->
+      <div class="card">
+        <div class="data-table">
+          <div class="data-row"><span class="data-key">Datum</span><span class="data-val">09.03.2026 · 10:14</span></div>
+          <div class="data-row"><span class="data-key">Lokacija</span><span class="data-val">Odjel 15 — Komarnički predio</span></div>
+          <div class="data-row"><span class="data-key">Vrsta drveta</span><span class="data-val">Bukva</span></div>
+          <div class="data-row"><span class="data-key">Dužina složaja</span><span class="data-val">4,00 m</span></div>
+          <div class="data-row"><span class="data-key">Koef. popunjenosti</span><span class="data-val">0,65</span></div>
+          <div class="data-row"><span class="data-key">Metoda</span><span class="data-val"><span class="mode-tag video">VIDEO</span></span></div>
+          <div class="data-row"><span class="data-key">GPS</span><span class="data-val" style="font-family:var(--mono);font-size:11px">44.537821, 16.218450</span></div>
+          <div class="data-row" style="border:none"><span class="data-key">Zapremina</span><span class="data-val highlight">3,251 m³</span></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-danger" onclick="if(confirm('Obrisati?'))showPage('pageHistory')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          Obriši
+        </button>
+        <button class="btn btn-primary" onclick="showPage('pageNewMode')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3z"/><polyline points="9 15 3 15 3 9"/><path d="M3 15a9 9 0 1 0 9-9"/></svg>
+          Remjer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ BOTTOM NAV ════════════ -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="navHome" onclick="showPage('pageHome');setNav('navHome')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Početna</span>
+    </button>
+    <button class="nav-item" id="navNew" onclick="showPage('pageNewMode');setNav('navNew')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span>Novo</span>
+    </button>
+    <button class="nav-item" id="navHist" onclick="showPage('pageHistory');setNav('navHist')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <span>Historija</span>
+    </button>
+    <button class="nav-item" id="navExport" onclick="alert('CSV preuzet!\n12 mjerenja · 87,4 m³ ukupno\npremjer-2026-03-09.csv')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span>Export</span>
+    </button>
+  </nav>
+
+</div>
+
+<script>
+  const pages = ['pageHome','pageNewMode','pageCameraVideo','pageVideoSections','pageHistory','pageDetail']
+  const backPages = {
+    pageNewMode: 'pageHome',
+    pageCameraVideo: 'pageNewMode',
+    pageVideoSections: 'pageCameraVideo',
+    pageHistory: 'pageHome',
+    pageDetail: 'pageHistory',
+  }
+  const pageTitles = {
+    pageHome: ['Premjer Složaja', 'v2.0 · offline'],
+    pageNewMode: ['Novo mjerenje', 'Korak 1 / 3 · Metoda'],
+    pageCameraVideo: ['Snimanje', 'Korak 2 / 3 · Video'],
+    pageVideoSections: ['Analiza presjeka', 'Korak 3 / 3'],
+    pageHistory: ['Historija', '12 mjerenja'],
+    pageDetail: ['Detalji mjerenja', 'Bukva · Odjel 15'],
+  }
+
+  let currentPage = 'pageHome'
+
+  function showPage(id) {
+    pages.forEach(p => {
+      document.getElementById(p).classList.toggle('active', p === id)
+    })
+    currentPage = id
+    const titles = pageTitles[id] || ['Premjer', '']
+    document.getElementById('headerTitle').textContent = titles[0]
+    document.getElementById('headerSub').textContent = titles[1]
+    const backBtn = document.getElementById('backBtn')
+    backBtn.style.display = (id !== 'pageHome') ? 'flex' : 'none'
+    window.scrollTo(0, 0)
+  }
+
+  function goBack() {
+    const target = backPages[currentPage] || 'pageHome'
+    showPage(target)
+  }
+
+  function setNav(id) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'))
+    document.getElementById(id)?.classList.add('active')
+  }
+
+  function selectMode(el, mode) {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('selected'))
+    el.classList.add('selected')
+    document.getElementById('videoModeInfo').style.display = mode === 'video' ? 'flex' : 'none'
+    document.getElementById('photoModeInfo').style.display = mode === 'photo' ? 'flex' : 'none'
+    // Change next page destination
+    const btn = el.closest('.scroll').querySelector('.btn-primary')
+    btn.onclick = () => showPage(mode === 'video' ? 'pageCameraVideo' : 'pageCameraVideo')
+  }
+
+  let light = false
+  function toggleTheme() {
+    light = !light
+    const r = document.documentElement.style
+    if (light) {
+      r.setProperty('--bg','#f4f7f4'); r.setProperty('--bg2','#e8efe8'); r.setProperty('--bg3','#dce8dc')
+      r.setProperty('--card','#ffffff'); r.setProperty('--card2','#f0f6f0')
+      r.setProperty('--border','#c8dcc8'); r.setProperty('--border2','#a8c4a8')
+      r.setProperty('--text','#1a2e1d'); r.setProperty('--text2','#3d5e40'); r.setProperty('--text3','#6b8f6e')
+      r.setProperty('--green','#166534'); r.setProperty('--green2','#16a34a')
+    } else {
+      r.setProperty('--bg','#0d1a0f'); r.setProperty('--bg2','#121f14'); r.setProperty('--bg3','#1a2e1d')
+      r.setProperty('--card','#1e3322'); r.setProperty('--card2','#243b28')
+      r.setProperty('--border','#2d4d32'); r.setProperty('--border2','#3a6140')
+      r.setProperty('--text','#e8f5e9'); r.setProperty('--text2','#a7c4aa'); r.setProperty('--text3','#6b8f6e')
+      r.setProperty('--green','#4ade80'); r.setProperty('--green2','#22c55e')
+    }
+  }
+
+  function updateVol() {
+    // Simple demo update
+    const v = (3.0 + Math.random() * 0.5).toFixed(3)
+    const el = document.getElementById('volDisplay')
+    if (el) el.textContent = v.replace('.',',')
+  }
+</script>
+</body>
+</html>
